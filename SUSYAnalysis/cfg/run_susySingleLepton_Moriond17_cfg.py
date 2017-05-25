@@ -42,15 +42,15 @@ metAna.recalibrate = True
 
 
 #-------- HOW TO RUN
-sample = 'MC'
+#sample = 'MC'
 #sample = 'data' #default
-#sample = 'Signal'
+sample = 'Signal'
 
-multib = False
-zerob = True
+multib = True
+zerob = False#True
 
 #-------- Preprocessor yes/no
-cmssw = True
+cmssw = False#Seems to be an issue for the useLumiInfo-stuff
 
 isData = False # default, but will be overwritten below
 isSignal = False # default, but will be overwritten below
@@ -248,6 +248,8 @@ isoTrackAna.doRelIsolation = True
 # store all taus by default
 genAna.allGenTaus = True
 
+# use lumi info for lhe weight analyzer
+lheWeightAna.useLumiInfo=True
 
 if sample == "MC":
 
@@ -364,12 +366,12 @@ elif sample == "data":
 
 #  susyCoreSequence.insert(susyCoreSequence.index(metAna),
 #      [metAnaEGClean, metAnaMuEGClean, metAnaUncorr] )
-  susyCoreSequence.insert(susyCoreSequence.index(metAna),
-      metAnaEGClean )
-  susyCoreSequence.insert(susyCoreSequence.index(metAna),
-      metAnaMuEGClean )
-  susyCoreSequence.insert(susyCoreSequence.index(metAna),
-      metAnaUncorr )
+#  susyCoreSequence.insert(susyCoreSequence.index(metAna),
+#      metAnaEGClean )
+#  susyCoreSequence.insert(susyCoreSequence.index(metAna),
+#      metAnaMuEGClean )
+#  susyCoreSequence.insert(susyCoreSequence.index(metAna),
+#      metAnaUncorr )
 
   if test!=0 and jsonAna in susyCoreSequence: susyCoreSequence.remove(jsonAna)
   if test==1:
@@ -421,8 +423,41 @@ treeProducer = cfg.Analyzer(
   collections = susySingleLepton_collections,
   )
 
+if isData:
+  susyCoreSequence.insert(susyCoreSequence.index(metAna)+1,
+      metAnaEGClean )
+  susyCoreSequence.insert(susyCoreSequence.index(metAna)+1,
+      metAnaMuEGClean )
+  susyCoreSequence.insert(susyCoreSequence.index(metAna)+1,
+      metAnaUncorr )
+  treeProducer.globalObjects.update({
+            "met_EGClean" : NTupleObject("metEGClean", metType, help="PF E_{T}^{miss}, after type 1 corrections (only EG cleaned)"),
+            "met_MuEGClean" : NTupleObject("metMuEGClean", metType, help="PF E_{T}^{miss}, after type 1 corrections (Muons and EG cleaned)"),
+            "met_Uncorr" : NTupleObject("metUncorr", metType, help="PF E_{T}^{miss}, after type 1 corrections (no cleaning)"),
+      })
 
 if isSignal:
+
+  treeProducer.globalVariables = treeProducer.globalVariables +[
+      NTupleVariable("GenSusyMScan1", lambda ev : ev.genSusyMScan1, int, mcOnly=True, help="Susy mass 1 in scan"),
+      NTupleVariable("GenSusyMScan2", lambda ev : ev.genSusyMScan2, int, mcOnly=True, help="Susy mass 2 in scan"),
+      NTupleVariable("GenSusyMScan3", lambda ev : ev.genSusyMScan3, int, mcOnly=True, help="Susy mass 3 in scan"),
+      NTupleVariable("GenSusyMScan4", lambda ev : ev.genSusyMScan4, int, mcOnly=True, help="Susy mass 4 in scan"),
+      NTupleVariable("GenSusyMGluino", lambda ev : ev.genSusyMGluino, int, mcOnly=True, help="Susy Gluino mass"),
+      NTupleVariable("GenSusyMGravitino", lambda ev : ev.genSusyMGravitino, int, mcOnly=True, help="Susy Gravitino mass"),
+      NTupleVariable("GenSusyMStop", lambda ev : ev.genSusyMStop, int, mcOnly=True, help="Susy Stop mass"),
+      NTupleVariable("GenSusyMSbottom", lambda ev : ev.genSusyMSbottom, int, mcOnly=True, help="Susy Sbottom mass"),
+      NTupleVariable("GenSusyMStop2", lambda ev : ev.genSusyMStop2, int, mcOnly=True, help="Susy Stop2 mass"),
+      NTupleVariable("GenSusyMSbottom2", lambda ev : ev.genSusyMSbottom2, int, mcOnly=True, help="Susy Sbottom2 mass"),
+      NTupleVariable("GenSusyMSquark", lambda ev : ev.genSusyMSquark, int, mcOnly=True, help="Susy Squark mass"),
+      NTupleVariable("GenSusyMNeutralino", lambda ev : ev.genSusyMNeutralino, int, mcOnly=True, help="Susy Neutralino mass"),
+      NTupleVariable("GenSusyMNeutralino2", lambda ev : ev.genSusyMNeutralino2, int, mcOnly=True, help="Susy Neutralino2 mass"),
+      NTupleVariable("GenSusyMNeutralino3", lambda ev : ev.genSusyMNeutralino3, int, mcOnly=True, help="Susy Neutralino3 mass"),
+      NTupleVariable("GenSusyMNeutralino4", lambda ev : ev.genSusyMNeutralino4, int, mcOnly=True, help="Susy Neutralino4 mass"),
+      NTupleVariable("GenSusyMChargino", lambda ev : ev.genSusyMChargino, int, mcOnly=True, help="Susy Chargino mass"),
+      NTupleVariable("GenSusyMChargino2", lambda ev : ev.genSusyMChargino2, int, mcOnly=True, help="Susy Chargino2 mass"),
+      ]
+
   susyCoreSequence.insert(susyCoreSequence.index(susyScanAna)+1,
         susyCounter)
   # change scan mass parameters
