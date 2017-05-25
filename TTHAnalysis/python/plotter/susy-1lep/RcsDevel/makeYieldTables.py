@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-lumi = "35.9"
+lumi = "36"
 from yieldClass import *
 from ROOT import *
 
@@ -224,9 +224,9 @@ if __name__ == "__main__":
             ('data_QCDsubtr','SR_MB_predict'), ('data','SR_MB')]
     label = 'SB, MB, and predictions for '+lumi+' fb$^{-1}$ for $n_{jet}$ 6,8 '
     printSamps = ['data 45j, SR','(data-QCD) 4j5, CR','data 4j5, Rcs$^{EWK}$','$\\kappa^{EWK}$, MC','(data-QCD) 68j, CR', 'data 68j, pred (val $\pm$ stat)', 'data 68j, SR']
-    ydsFew6.printLatexTable(samps, printSamps, label,f, False)
+    ydsFew6.printLatexTable(samps, printSamps, label,f, doSys, True)
     printSamps = ['data 45j, SR','(data-QCD) 4j5, CR','data 4j5, Rcs$^{EWK}$','$\\kappa^{EWK}$, MC','(data-QCD) 9ij, CR', 'data 9ij, pred (val $\pm$ stat)', 'data 9ij, SR']
-    ydsFew9.printLatexTable(samps, printSamps, label, f, False)
+    ydsFew9.printLatexTable(samps, printSamps, label, f, doSys, True)
     printLatexFooter(f, 1)
     f.close()
 
@@ -277,6 +277,19 @@ if __name__ == "__main__":
     printLatexFooter(f, 1)
     f.close()
 
+    caption = ''
+    f =  open('PAS_prediction.tex','w')
+
+    printLatexHeader(len(samps), f, caption, 0)
+
+    samps = [ ('T1tttt_Scan_mGo1900_mLSP100','SR_MB'),('T1tttt_Scan_mGo1400_mLSP1100','SR_MB'),('data_QCDsubtr','SR_MB_predict'), ('data','SR_MB')]
+    label = ''
+    printSamps = ['1.9/0.1','1.4/1.1', 'Predicted background', 'Observed']
+    yds6.printLatexTable(samps, printSamps, label,f, doSys)
+    yds9.printLatexTable(samps, printSamps, label, f, doSys)
+    printLatexFooter(f, 0)
+    f.close()
+
     # Signal yields
     caption = 'Dummy signal points'
     f =  open('4to68_4to9j_signal.tex','w')
@@ -292,3 +305,4 @@ if __name__ == "__main__":
     yds9.printLatexTable(samps, printSamps, label, f, doSys)
     printLatexFooter(f, 1)
     f.close()
+
