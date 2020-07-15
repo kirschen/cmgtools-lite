@@ -6,8 +6,8 @@ from ROOT import *
 
 def dumpCounts(tree,cname = "counts.txt"):
 
-    hCounts = TH2F("hCounts","Mass scan",1400,1,2801,1000,-1,2001)
-    hWeights = TH2F("hWeights","Mass scan",1400,1,2801,1000,-1,2001)
+    hCounts = TH2F("hCounts","Mass scan",1000,1,2001,1400,-1,2801)
+    hWeights = TH2F("hWeights","Mass scan",1000,1,2001,1400,-1,2801)
 
     #var = "mLSP:mGo" # for friend tree
     var = "GenSusyMNeutralino:GenSusyMGluino" # for cmg tuple
@@ -126,7 +126,7 @@ if __name__ == "__main__":
         print '#No file names given'
         exit(0)
 
-    dumpChain(fileList)
-    #dumpTrees(fileList)
+    #dumpChain(fileList)
+    dumpTrees(fileList)
 
     print 'Finished'
